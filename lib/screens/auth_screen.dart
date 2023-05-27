@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_book/logger.dart';
 import 'package:photo_book/screens/home_page.dart';
+import 'package:photo_book/screens/login_page.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -12,7 +13,12 @@ class AuthScreen extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         logger.i(snapshot.data);
-        return HomePage();
+        if (snapshot.hasData) {
+          logger.i("Logged in");
+          return const HomePage();
+        } else {
+          return LoginPage();
+        }
       },
     );
   }

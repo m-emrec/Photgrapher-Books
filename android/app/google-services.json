@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988421440093",
+    "project_id": "photographer-sbook",
+    "storage_bucket": "photographer-sbook.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988421440093:android:a76da660ce230a5c9703b4",
+        "android_client_info": {
+          "package_name": "com.example.photo_book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLl-vWIM_trOIAtz9l_sGvayTo6vckt1s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

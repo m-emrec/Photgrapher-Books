@@ -1,14 +1,19 @@
-import 'dart:math';
-
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:photo_book/extensions/image_path_extension.dart';
 import 'package:photo_book/extensions/sized_box_extension.dart';
 import 'package:photo_book/logger.dart';
+import 'package:photo_book/screens/forgot_password_page.dart';
+import 'package:photo_book/screens/sign_up_page.dart';
+import 'package:photo_book/utils/form_section.dart';
+import 'package:photo_book/utils/logo_section.dart';
 import 'package:photo_book/utils/text_input_field.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
+
+  static const routeName = "login-page";
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -20,6 +25,15 @@ class LoginPage extends StatelessWidget {
       return " Please enter valid email.";
     } else {
       return null;
+    }
+  }
+
+  Future<void> loginToAccount(String email, String password) async {
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+    } catch (e) {
+      logger.e(e);
     }
   }
 
@@ -38,53 +52,41 @@ class LoginPage extends StatelessWidget {
               children: [
                 (size.height * 0.05).ph(),
                 // Logo
-                Image.asset(
-                  "logo".toPng(),
-                  height: size.height * 0.2,
-                  width: size.width * 0.6,
-                  fit: BoxFit.fill,
-                ),
+                const LogoWidget(),
                 (size.height * 0.05).ph(),
                 // Title
                 Text(
                   "Login",
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
+                32.ph(),
                 // Form Field
-                Form(
-                  key: formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                      top: 32.0,
+                FormSection(
+                  fields: [
+                    InputField(
+                      label: "Email",
+                      keyboardType: TextInputType.emailAddress,
+                      validatorFunc: validateEmail,
+                      controller: emailController,
+                      inputAction: TextInputAction.next,
                     ),
-                    child: Column(
-                      children: [
-                        //email field
-                        InputField(
-                          label: "Email",
-                          keyboardType: TextInputType.emailAddress,
-                          validatorFunc: validateEmail,
-                          controller: emailController,
-                          inputAction: TextInputAction.next,
-                        ),
-                        16.ph(),
-                        // password Field
-                        InputField(
-                          label: "Password",
-                          isPassword: true,
-                          controller: passwordController,
-                        ),
-                      ],
+                    // password Field
+                    InputField(
+                      label: "Password",
+                      isPassword: true,
+                      controller: passwordController,
                     ),
-                  ),
+                  ],
+                  formKey: formKey,
                 ),
 
                 //Forgot Pasword
-                const Align(
+                Align(
                   alignment: Alignment.topRight,
                   child: TextButton(
-                    onPressed: null,
-                    child: Text(
+                    onPressed: () => Navigator.of(context)
+                        .pushNamed(ForgotPasswordPage.routeName),
+                    child: const Text(
                       "Forgot Password ?",
                     ),
                   ),
@@ -96,21 +98,34 @@ class LoginPage extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        logger.i("Yep");
+                        showDialog(
+                          useRootNavigator: true,
+                          context: context,
+                          builder: (_) => const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                        loginToAccount(
+                                emailController.text, passwordController.text)
+                            .then(
+                          (value) =>
+                              Navigator.of(context).pushReplacementNamed("/"),
+                        );
                       }
                     },
                     child: const Text("Login"),
                   ),
                 ),
                 16.ph(),
-                // New User
-                const Row(
+                // New User Text
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("New User?"),
+                    const Text("New User?"),
                     TextButton(
-                      onPressed: null,
-                      child: Text(
+                      onPressed: () =>
+                          Navigator.of(context).pushNamed(SignUpPage.routeName),
+                      child: const Text(
                         "Create an account.",
                       ),
                     ),

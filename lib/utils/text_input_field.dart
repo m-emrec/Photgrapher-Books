@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:photo_book/logger.dart';
 
 class InputField extends StatefulWidget {
   InputField({
@@ -10,6 +9,7 @@ class InputField extends StatefulWidget {
     this.isPassword = false,
     required this.controller,
     this.inputAction = TextInputAction.none,
+    this.makeCapital = false,
   });
 
   final String label;
@@ -18,7 +18,9 @@ class InputField extends StatefulWidget {
   final bool isPassword;
   final TextEditingController controller;
   final TextInputAction inputAction;
+  final bool makeCapital;
   bool showPassword = false;
+
   @override
   State<InputField> createState() => _InputFieldState();
 }
@@ -44,20 +46,26 @@ class _InputFieldState extends State<InputField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: widget.controller,
-      validator: widget.validatorFunc == null
-          ? null
-          : (value) => widget.validatorFunc!(value),
-      keyboardType: widget.keyboardType,
-      obscureText: widget.isPassword && !widget.showPassword,
-      decoration: InputDecoration(
-        label: Text(
-          widget.label,
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: TextFormField(
+        controller: widget.controller,
+        validator: widget.validatorFunc == null
+            ? null
+            : (value) => widget.validatorFunc!(value),
+        keyboardType: widget.keyboardType,
+        obscureText: widget.isPassword && !widget.showPassword,
+        decoration: InputDecoration(
+          label: Text(
+            widget.label,
+          ),
+          suffix: widget.isPassword ? _showPassword() : null,
         ),
-        suffix: widget.isPassword ? _showPassword() : null,
+        textInputAction: widget.inputAction,
+        textCapitalization: widget.makeCapital
+            ? TextCapitalization.sentences
+            : TextCapitalization.none,
       ),
-      textInputAction: widget.inputAction,
     );
   }
 }
